@@ -1,0 +1,68 @@
+# render.yaml
+# Render Blueprint for Advanced Internet Speed Test
+# Place this file at the repository root (render.yaml)
+# This blueprint creates:
+#  - a Web Service (Node server) for /ping, /upload, /download endpoints
+#  - a Static Site for the client (optional) OR the Web Service can serve static files
+#  - a Background Worker (optional) for heavy tasks or scheduled jobs
+#  - environment variables and health checks
+services:
+  - type: web
+    name: speedtest-server
+    env: node
+    plan: free
+    region: oregon
+    branch: main
+    buildCommand: npm ci
+    startCommand: node server.js
+    # If you prefer Docker, Render will use Dockerfile automatically if present.
+    # Uncomment the following line to force Docker usage:
+    # dockerfilePath: Dockerfile
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: "10000"
+      - key: MAX_DOWNLOAD_MB
+        value: "128"
+    healthCheckPath: /health
+    autoDeploy: true
+    disk:
+      sizeGb: 1
+    # Optional: set instance count and autoscaling
+    # scale:
+    #   minInstances: 1
+    #   maxInstances: 3
+    #   cpuThreshold: 70
+
+  - type: static
+    name: speedtest-client
+    branch: main
+    buildCommand: echo "static"
+    publishPath: public
+    plan: free
+    region: oregon
+    envVars:
+      - key: SERVER_BASE
+        # If you want the static client to call the server service by internal Render service name:
+        # value: https://speedtest-server.onrender.com
+        value: ""
+    autoDeploy: true
+
+  - type: cron
+    name: speedtest-cleanup
+    branch: main
+    plan: free
+    schedule: "0 3 * * *" # daily cleanup at 03:00 UTC
+    command: node scripts/cleanup.js || echo "no cleanup script"
+    envVars:
+      - key: NODE_ENV
+        value: production
+
+# Optional: static files can be served by the web service instead of a separate static site.
+# Secrets (Render will prompt to add these in the UI or you can add them via the Render dashboard)
+secrets:
+  - name: S3_ACCESS_KEY
+  - name: S3_SECRET_KEY
+  - name: S3_BUCKET
+  - name: CDN_BASE_URL
