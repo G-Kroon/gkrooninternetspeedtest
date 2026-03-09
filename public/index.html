@@ -1,1 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Advanced Responsive Speed Test</title>
+  <link rel="stylesheet" href="styles.css" />
+  <!-- Chart.js CDN for charts (client-side) -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <main class="container">
+    <header class="card header-card">
+      <div>
+        <h1 class="title">Advanced Internet Speed Test</h1>
+        <p class="subtitle">Parallel streams · multi-server selection · Web Worker · charts · history</p>
+      </div>
+      <div class="controls">
+        <select id="serverSelect" class="server-select" aria-label="Choose test server"></select>
+        <button id="startBtn" class="btn primary">Start Test</button>
+        <button id="stopBtn" class="btn ghost" disabled>Stop</button>
+      </div>
+    </header>
+
+    <section class="card metrics-card" aria-live="polite">
+      <div class="metrics-grid">
+        <div class="metric">
+          <div class="label">Ping</div>
+          <div id="ping" class="value">— ms</div>
+          <div id="jitter" class="desc">Jitter: — ms</div>
+        </div>
+
+        <div class="metric">
+          <div class="label">Download</div>
+          <div id="download" class="value">— Mbps</div>
+          <div id="dlInfo" class="desc">Parallel streams: —</div>
+        </div>
+
+        <div class="metric">
+          <div class="label">Upload</div>
+          <div id="upload" class="value">— Mbps</div>
+          <div id="ulInfo" class="desc">Parallel streams: —</div>
+        </div>
+      </div>
+
+      <div class="progress-wrap">
+        <div class="progress-label">Progress</div>
+        <div class="progress">
+          <div id="progressBar" class="progress-bar" style="width:0%"></div>
+        </div>
+      </div>
+
+      <div class="chart-wrap">
+        <canvas id="throughputChart" height="120"></canvas>
+      </div>
+
+      <div class="log" id="log" aria-hidden="false"></div>
+      <div class="history" id="history"></div>
+    </section>
+
+    <footer class="card footer-card">
+      <div class="footer-grid">
+        <div>Server: <span id="serverUrl">/</span></div>
+        <div>Test config: <span id="configSummary">parallel=4; duration=6s</span></div>
+      </div>
+    </footer>
+  </main>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
 
